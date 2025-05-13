@@ -1,0 +1,98 @@
+import os
+
+FILENAME = "bookreviews.txt"
+
+# Function to add a review
+def add_review():
+    title = input("Enter Book Title: ")
+    author = input("Enter Author Name: ")
+    review = input("Enter Your Review: ")
+    rating = input("Enter Rating (out of 5): ")
+
+    with open(FILENAME, "a") as file:
+        file.write(f"{title}|{author}|{review}|{rating}\n")
+    print("✅ Review added successfully!\n")
+
+# Function to view all reviews
+def view_reviews():
+    if not os.path.exists(FILENAME):
+        print("❌ No reviews found.")
+        return
+
+    with open(FILENAME, "r") as file:
+        reviews = file.readlines()
+        if not reviews:
+            print("❌ No reviews to show.\n")
+        else:
+            print("\n📚 All Book Reviews:\n")
+            for i, review in enumerate(reviews, 1):
+                title, author, review_text, rating = review.strip().split("|")
+                print(f"{i}. Title: {title}\n   Author: {author}\n   Review: {review_text}\n   Rating: {rating}/5\n")
+
+# Function to search a review by book title
+def search_review():
+    title = input("Enter Book Title to Search: ").lower()
+    found = False
+
+    with open(FILENAME, "r") as file:
+        for review in file:
+            book_title, author, review_text, rating = review.strip().split("|")
+            if book_title.lower() == title:
+                print(f"\n🔍 Book Found:\nTitle: {book_title}\nAuthor: {author}\nReview: {review_text}\nRating: {rating}/5\n")
+                found = True
+                break
+
+    if not found:
+        print("❌ No review found for that title.\n")
+
+# Function to delete a review
+def delete_review():
+    title = input("Enter Book Title to Delete Review: ").lower()
+    new_reviews = []
+    found = False
+
+    with open(FILENAME, "r") as file:
+        reviews = file.readlines()
+
+    for review in reviews:
+        book_title, *_ = review.strip().split("|")
+        if book_title.lower() != title:
+            new_reviews.append(review)
+        else:
+            found = True
+
+    with open(FILENAME, "w") as file:
+        file.writelines(new_reviews)
+
+    if found:
+        print("🗑️ Review deleted successfully!\n")
+    else:
+        print("❌ No review found with that title.\n")
+
+# Main menu
+def main():
+    while True:
+        print("===== Book Review System =====")
+        print("1. Add a Book Review")
+        print("2. View All Reviews")
+        print("3. Search Review by Title")
+        print("4. Delete a Review")
+        print("5. Exit")
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == "1":
+            add_review()
+        elif choice == "2":
+            view_reviews()
+        elif choice == "3":
+            search_review()
+        elif choice == "4":
+            delete_review()
+        elif choice == "5":
+            print("👋 Exiting... Thank you!")
+            break
+        else:
+            print("⚠️ Invalid choice. Please try again.\n")
+
+if __name__ == "__main__":
+    main()
